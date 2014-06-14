@@ -118,3 +118,33 @@ zfsroot  18.5G   126K  18.5G     0%  1.00x  ONLINE  -
     ata-KINGSTON-part3      -      -      -         -
 ```
 
+Unmount the ZFS pools:
+
+```
+zfs umount -a
+```
+
+Set the mount points so they boot properly:
+
+```
+zfs set mountpoint=/ zfsroot
+zfs set mountpoint=/home zfsraid
+```
+
+Export the zfs filesystem to put it into a consistent state for a reboot:
+
+```
+zpool export zfsraid
+zpool export zfsroot
+```
+
+Follow other guide (Step 4 and Step 5), a few changes:
+
+```
+apt-get install python3-software-properties
+add-apt-repository --yes ppa:zfs-native/stable
+apt-get install --no-install-recommends linux-image-generic linux-headers-generic
+apt-get install build-essential
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall
+
+```
