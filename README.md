@@ -29,7 +29,9 @@ A USB drive is very useful, lets create a bootable USB drive with System Rescue 
 
 * Download the rescue CD (http://people.debian.org/~jgoerzen/rescue-zfs/)
 * Download Linux Mint 17 (must be 64-bit for ZFS)
-* Install a USB boot disk creator (on Ubuntu I used usb-creator-gtk and then launched USB Startup Creator from the menu)
+* Install a USB boot disk creator 
+  * On Ubuntu I used unetbootin (USB statup creator only works for Ubuntu ISOs) which required me to also install the extlinux package.
+  * Then launched unetbootin and installed System Recovery ISO onto first partition and Linux Mint 17 on second partition.
 
  
 
