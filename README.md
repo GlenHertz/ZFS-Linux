@@ -1,6 +1,8 @@
 ZFS-Linux
 =========
 
+# Don't use this.  This doesn't work! They are my notes from a WIP to get ZFS on Linux Mint 17.
+
 ZFS on Ubuntu 14.04 Trusty Tahr (Linux Mint 17)
 
 # Background
