@@ -101,11 +101,11 @@ lrwxrwxrwx 1 root root  9 Jun 14 15:16 ata-WDC_WD30EFRX-3 -> ../../sdb
 The part2 and part3 partitions on the SSD are a mirror.  The three large hard drives create a raidz1 array and the SSD part4 is the cache for the slow hard drives (making them into a fast hybrid drive).
 
 ```
-zpool create -f zfsriad raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part4
+zpool create -f zfsraid raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part4
 zpool create zfsroot mirror ata-KINGSTON-part2 ata-KINGSTON-part3
 zpool list -v
 NAME   SIZE  ALLOC   FREE    CAP  DEDUP  HEALTH  ALTROOT
-zfsriad  8.12T  1.13M  8.12T     0%  1.00x  ONLINE  -
+zfsraid  8.12T  1.13M  8.12T     0%  1.00x  ONLINE  -
   raidz1  8.12T  1.13M  8.12T         -
     ata-WDC_WD30EFRX-1      -      -      -         -
     ata-WDC_WD30EFRX-2      -      -      -         -
