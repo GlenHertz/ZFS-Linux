@@ -37,15 +37,19 @@ A USB drive is very useful, lets create a bootable USB drive with System Rescue 
 # First boot-up
 
 * Boot from Linux Mint 17 live CD
-* Get the ZFS PPA: `Linux Mint Menu >> Software Sources >> PPAs >> ppa:zfs-native/stable`
-* Install `wajig`, a better `apt-get` wrapper and install ZFS kernel module:
+
+Install /boot on an ext2 partition and / on a ext4 partition (where ZFS cache will eventually go).
+
+Then reboot and test install.
+
+Then reboot from live CD and copy root onto ZFS root directory.
  
 ```
 sudo -i
-apt-get install wajig
-wajig update
-wajig install build-essential
-wajig install spl-dkms zfs-dkms ubuntu-zfs mountall
+add-apt-repository --yes ppa:zfs-native/stable
+apt-get update  # some CD-ROM errors are OK
+apt-get install --yes build-essential
+apt-get install --yes spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
 # if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
@@ -141,10 +145,10 @@ zpool export zfsroot
 Follow other guide (Step 4 and Step 5), a few changes:
 
 ```
-apt-get install python3-software-properties
+apt-get install --yesp ython3-software-properties
 add-apt-repository --yes ppa:zfs-native/stable
-apt-get install --no-install-recommends linux-image-generic linux-headers-generic
-apt-get install build-essential
-apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall
+apt-get install --yes --no-install-recommends linux-image-generic linux-headers-generic
+apt-get install --yes build-essential
+apt-get install --yes spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 
 ```
