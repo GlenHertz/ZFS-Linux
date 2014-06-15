@@ -106,26 +106,36 @@ lrwxrwxrwx 1 root root  9 Jun 14 15:16 ata-WDC_WD30EFRX-3 -> ../../sdb
 The part2 and part3 partitions on the SSD are a mirror.  The three large hard drives create a raidz1 array and the SSD part4 is the cache for the slow hard drives (making them into a fast hybrid drive).
 
 ```
-zpool create -O mountpoint=none rpool ata-KINGSTON-part2
-zfs create -o mountpoint=/ rpool/root
-zpool set bootfs=rpool/root rpool
+zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
 zfs set compression=on rpool
+zfs create -o mountpoint=/ rpool/root
+zfs create -o mountpoint=/home rpool/home
+zfs create -o mountpoint=/pictures rpool/pictures
+zfs create -o mountpoint=/music rpool/music
+zfs create -o mountpoint=/mythtv rpool/mythtv
+zfs set compression=off rpool/pictures
+zfs set compression=off rpool/music
+zfs set compression=off rpool/mythtv
+zpool set bootfs=rpool/root rpool
 zpool export rpool
 zpool import -R /mnt rpool
 mkdir /sda4
 mount /dev/sda4 /sda4
 cp -a /sda4/* /mnt
+```
+
+After that, view the pool configuration:
+```
 zpool list -v
-NAME   SIZE  ALLOC   FREE    CAP  DEDUP  HEALTH  ALTROOT
-rpool  18.5G  2.13G  16.4G    11%  1.00x  ONLINE  -
-  ata-KINGSTON-part2  18.5G  2.13G  16.4G         -
+ rpool  8.12T  4.24G  8.12T     0%  1.00x  ONLINE  /mnt
+   raidz1  8.12T  4.24G  8.12T         -
+     ata-WDC_WD30EFRX-1      -      -      -         -
+     ata-WDC_WD30EFRX-2      -      -      -         -
+     ata-WDC_WD30EFRX-3      -      -      -         -
+ cache      -      -      -      -      -      -
+   ata-KINGSTON-part2  18.6G  83.5K  18.6G         -
 ```
 
-
-
-```
-zpool create -f zfsraid raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part4
-```
 
 Unmount the ZFS pools:
 
@@ -133,25 +143,10 @@ Unmount the ZFS pools:
 zfs umount -a
 ```
 
-Set the mount points for testing purposes:
-
-```
-zfs set mountpoint=/media/zfsroot zfsroot
-zfs set mountpoint=/media/zfsraid zfsraid
-```
-
-Export the zfs filesystem to put it into a consistent state for a reboot:
-
-```
-zpool export zfsraid
-zpool export zfsroot
-```
-
 Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 
 ```
-hostid > /etc/hostid
-zpool set cachefile=/etc/zfs/zpool.cache zfsroot
+zpool set cachefile=/etc/zfs/zpool.cache rpool
 ```
 
 Now make it so you can login as root from the graphical login screen so that you don't touch /home when you login (since we want to copy /home to /media/zfsraid).  Search for "Login Window" and go to Options and allow root to login. Then set the root password:
@@ -160,6 +155,7 @@ Now make it so you can login as root from the graphical login screen so that you
 passwd
 ```
 
+# Reboot
 
 Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
 
