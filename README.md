@@ -140,6 +140,7 @@ zpool list -v
    ata-KINGSTON-part2  18.6G  83.5K  18.6G         -
 ```
 
+Fix fstab on the new root by editing `/mnt/etc/fstab` and commenting the line that mounts to `/`.
 
 Unmount the ZFS pools:
 
@@ -165,6 +166,7 @@ For good measure, lets regenerate the ramdisk and update grub:
 
 ```
 update-initramfs -c -k all
+update-grub
 ```
 
 Hopefully ZFS will boot ast the root (/) drive.
