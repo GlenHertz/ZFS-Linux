@@ -117,15 +117,13 @@ zfs create -o mountpoint=/home rpool/home
 zfs create -o mountpoint=/pictures rpool/pictures
 zfs create -o mountpoint=/music rpool/music
 zfs create -o mountpoint=/mythtv rpool/mythtv
+zfs create -o mountpoint=/scratch rpool/scratch
 zfs set compression=off rpool/pictures
 zfs set compression=off rpool/music
 zfs set compression=off rpool/mythtv
 zpool set bootfs=rpool/root rpool
 zpool export rpool
 zpool import -R /mnt rpool
-mkdir /sda4
-mount /dev/sda4 /sda4
-cp -a /sda4/* /mnt
 ```
 
 After that, view the pool configuration:
@@ -140,13 +138,30 @@ zpool list -v
    ata-KINGSTON-part2  18.6G  83.5K  18.6G         -
 ```
 
-Fix fstab on the new root by editing `/mnt/etc/fstab` and commenting the line that mounts to `/`.
 
-Unmount the ZFS pools:
+Get / ready to copy
+```
+locale-gen en_US.utf8
+mkdir /sda4
+mount /dev/sda4 /sda4
+cp -a /sda4/* /mnt
+```
+
+
+## Fix Grub in chroot so it will boot
+
+Creat a chroot environment:
 
 ```
-zfs umount -a
+mount --bind /dev  /mnt/dev
+mount --bind /proc /mnt/proc
+mount --bind /sys  /mnt/sys
+chroot /mnt /bin/bash --login
 ```
+
+# More here
+
+Fix fstab on the new root by editing `/etc/fstab` and commenting the line that mounts to `/`.
 
 Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 
@@ -157,7 +172,7 @@ zpool set cachefile=/etc/zfs/zpool.cache rpool
 Add kernel parameters so ZFS will be mounted on boot-up.  Edit these lines in /etc/defaults/grub:
 
 ```
-GRUB_CMDLINE_LINUX_DEFAULT="root=ZFS=rpool/root boot=zfs quiet splash"
+GRUB_CMDLINE_LINUX_DEFAULT="root=ZFS=rpool/root boot=zfs zfs_force=1 quiet splash"
 ```
 
 You can also comment out the `GRUB_HIDDEN*` lines so the boot menu isn't hidden (in case you want to edit it for testing purposes).
@@ -169,6 +184,7 @@ update-initramfs -c -k all
 update-grub
 ```
 
+
 Hopefully ZFS will boot ast the root (/) drive.
 
 Just before you reboot, lets make it so you can login as root if needed for debugging, by setting the password and making it so the root user can login via the graphical login manager ("Linux Mint Menu >> Administration >> Login Window >> Options >> Allow root login")
@@ -176,6 +192,13 @@ Just before you reboot, lets make it so you can login as root if needed for debu
 ```
 passwd
 ```
+
+Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
+
+```
+zfs export rpool
+```
+
 
 # Third Boot
 
