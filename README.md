@@ -40,12 +40,10 @@ A USB drive is very useful, lets create a bootable USB drive with System Rescue 
 
 * Boot from Linux Mint 17 live CD
 
-Install /boot on an ext2 partition and / on a ext4 partition (where ZFS cache will eventually go).
+Install /boot on an ext2 partition and / on an ext4 partition (where ZFS cache will eventually go).
 
-Then reboot and test install.
+Then reboot, test install is OK.  While still running, lets add ZFS to the kernel.   Open a Terminal and then:
 
-Then reboot from live CD and copy root onto ZFS root directory.
- 
 ```
 sudo -i
 add-apt-repository --yes ppa:zfs-native/stable
@@ -65,10 +63,10 @@ If that works, now we can create ZFS volumes, etc.
 
 Using `cfdisk` from a Terminal, partition the SSD drive:
 
-* Part 1: primary, size=256 MB, type=83 (ext2), bootable 
+* Part 1: primary, size=256 MB, type=83 (ext2), bootable, /boot 
 * Part 2: primary, size=20000 MB, type=BF (Solaris)
 * Part 3: primary, size=20000 MB, type=BF (Solaris)
-* Part 3: primary, size=remainder, type=BF (Solaris)
+* Part 4: primary, size=remainder, type=?? (ext4), /
 
 When finished it should look something like this, `fdisk -l /dev/sda`:
 
@@ -130,11 +128,11 @@ Unmount the ZFS pools:
 zfs umount -a
 ```
 
-Set the mount points so they boot properly:
+Set the mount points for testing purposes:
 
 ```
-zfs set mountpoint=/ zfsroot
-zfs set mountpoint=/home zfsraid
+zfs set mountpoint=/media/zfsroot zfsroot
+zfs set mountpoint=/media/zfsraid zfsraid
 ```
 
 Export the zfs filesystem to put it into a consistent state for a reboot:
@@ -143,6 +141,53 @@ Export the zfs filesystem to put it into a consistent state for a reboot:
 zpool export zfsraid
 zpool export zfsroot
 ```
+
+Now let make sure ZFS is loaded on reboot (not really sure about these steps):
+
+```
+hostid > /etc/hostid
+zpool set cachefile=/etc/zfs/zpool.cache zfsroot
+```
+
+Now make it so you can login as root from the graphical login screen so that you don't touch /home when you login (since we want to copy /home to /media/zfsraid).  Search for "Login Window" and go to Options and allow root to login. Then set the root password:
+
+```
+passwd
+```
+
+
+Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
+
+```
+dmesg | grep ZFS
+```
+
+If that doesn't return anything then something went wrong (see, I was unsure of those steps directly above).  If ZFS is loaded, then you should see zfsroot and zfsraid mounted:
+
+```
+df -h
+```
+
+Copy /home into /media/zfsraid:
+
+```
+cp -a /home/* /media/zfsraid
+```
+
+Change the mount point of zfsraid:
+
+```
+zfs set mountpoint=/home zfsraid
+```
+
+Then reboot again and login as your regular user and check with `df` that `zfsraid` is mounted to `/home`.
+
+
+
+
+
+
+
 
 Follow other guide (Step 4 and Step 5), a few changes:
 
