@@ -105,21 +105,25 @@ lrwxrwxrwx 1 root root  9 Jun 14 15:16 ata-WDC_WD30EFRX-3 -> ../../sdb
 The part2 and part3 partitions on the SSD are a mirror.  The three large hard drives create a raidz1 array and the SSD part4 is the cache for the slow hard drives (making them into a fast hybrid drive).
 
 ```
-zpool create -f zfsraid raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part4
-zpool create zfsroot mirror ata-KINGSTON-part2 ata-KINGSTON-part3
+zpool create -O mountpoint=none rpool ata-KINGSTON-part2
+zfs create -o mountpoint=/ rpool/root
+zpool set bootfs=rpool/root rpool
+zfs set compression=on rpool
+zpool export rpool
+zpool import -R /mnt rpool
+mkdir /sda4
+mount /dev/sda4 /sda4
+cp -a /sda4/* /mnt
 zpool list -v
 NAME   SIZE  ALLOC   FREE    CAP  DEDUP  HEALTH  ALTROOT
-zfsraid  8.12T  1.13M  8.12T     0%  1.00x  ONLINE  -
-  raidz1  8.12T  1.13M  8.12T         -
-    ata-WDC_WD30EFRX-1      -      -      -         -
-    ata-WDC_WD30EFRX-2      -      -      -         -
-    ata-WDC_WD30EFRX-3      -      -      -         -
-cache      -      -      -      -      -      -
-  ata-KINGSTON-part4  18.4G    26K  18.4G         -
-zfsroot  18.5G   126K  18.5G     0%  1.00x  ONLINE  -
-  mirror  18.5G   126K  18.5G         -
-    ata-KINGSTON-part2      -      -      -         -
-    ata-KINGSTON-part3      -      -      -         -
+rpool  18.5G  2.13G  16.4G    11%  1.00x  ONLINE  -
+  ata-KINGSTON-part2  18.5G  2.13G  16.4G         -
+```
+
+
+
+```
+zpool create -f zfsraid raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part4
 ```
 
 Unmount the ZFS pools:
