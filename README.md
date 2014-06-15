@@ -50,7 +50,7 @@ add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
 hostid > /etc/hostid
-apt-get install --yes spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
 # if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
