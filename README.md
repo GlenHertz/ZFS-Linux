@@ -198,6 +198,8 @@ ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/
 update-grub
 ```
 
+Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct (I had a few extra /dev/sd* lines in there).
+
 
 Hopefully ZFS will boot ast the root (/) drive.
 
@@ -207,12 +209,6 @@ Just before you reboot, lets make it so you can login as root if needed for debu
 passwd
 ```
 
-Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
-
-```
-zfs export rpool
-```
-
 Exit chroot and unmount
 
 ```
@@ -220,7 +216,15 @@ exit
 umount .... more here
 ```
 
-# Third Boot
+
+Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
+
+```
+zfs export rpool
+```
+
+
+# Forth Boot
 
 Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
 
@@ -234,34 +238,20 @@ If that doesn't return anything then something went wrong (see, I was unsure of 
 df -h
 ```
 
-Copy /home into /media/zfsraid:
-
+Hopefully you will see this:
 ```
-cp -a /home/* /media/zfsraid
-```
-
-Change the mount point of zfsraid:
-
-```
-zfs set mountpoint=/home zfsraid
-```
-
-Then reboot again and login as your regular user and check with `df` that `zfsraid` is mounted to `/home`.
-
-
-
-
-
-
-
-
-Follow other guide (Step 4 and Step 5), a few changes:
-
-```
-apt-get install --yesp ython3-software-properties
-add-apt-repository --yes ppa:zfs-native/stable
-apt-get install --yes --no-install-recommends linux-image-generic linux-headers-generic
-apt-get install --yes build-essential
-apt-get install --yes spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
-
+Filesystem      Size  Used Avail Use% Mounted on
+rpool/root      5.4T  2.9G  5.4T   1% /
+udev            3.9G  4.0K  3.9G   1% /dev
+tmpfs           796M  1.4M  794M   1% /run
+none            4.0K     0  4.0K   0% /sys/fs/cgroup
+none            5.0M     0  5.0M   0% /run/lock
+none            3.9G  676K  3.9G   1% /run/shm
+none            100M   12K  100M   1% /run/user
+/dev/sda1       236M   75M  149M  34% /boot
+rpool/home      5.4T   42M  5.4T   1% /home
+rpool/music     5.4T  256K  5.4T   1% /music
+rpool/mythtv    5.4T  256K  5.4T   1% /mythtv
+rpool/pictures  5.4T  256K  5.4T   1% /pictures
+rpool/scratch   5.4T  256K  5.4T   1% /scratch
 ```
