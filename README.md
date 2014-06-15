@@ -53,8 +53,8 @@ sudo -i
 add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
-hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
-apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
+#hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall #zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
 # if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
@@ -111,6 +111,7 @@ The part2 and part3 partitions on the SSD are a mirror.  The three large hard dr
 
 ```
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
+zpool set bootfs=rpool/root rpool
 zfs set compression=on rpool
 zfs create -o mountpoint=/ rpool/root
 zfs create -o mountpoint=/home -o compression=off rpool/home
@@ -118,15 +119,9 @@ zfs create -o mountpoint=/pictures -o compression=off rpool/pictures
 zfs create -o mountpoint=/music -o compression=off rpool/music
 zfs create -o mountpoint=/mythtv -o compression=off rpool/mythtv
 zfs create -o mountpoint=/scratch -o compression=off rpool/scratch
-zfs set compression=off rpool/pictures
-zfs set compression=off rpool/music
-zfs set compression=off rpool/mythtv
-zpool set bootfs=rpool/root rpool
 zpool export rpool
 zpool import -R /mnt rpool
 ```
-
-Check if zpool.cache exists
 
 
 After that, view the pool configuration:
@@ -145,8 +140,16 @@ zpool list -v
 Get / ready to copy
 ```
 locale-gen en_US.utf8
+```
+
+# Reboot
+
+Boot from live CD, install ZFS module (as above), then mount old and new roots and do a copy
+
+```
 mkdir /sda4
 mount /dev/sda4 /sda4
+zpool import -d /dev/disk/by-id/ -R /mnt rpool
 cp -a /sda4/* /mnt
 ```
 
