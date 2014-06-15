@@ -42,14 +42,18 @@ A USB drive is very useful, lets create a bootable USB drive with System Rescue 
 
 Install /boot on an ext2 partition and / on an ext4 partition (where ZFS cache will eventually go).
 
-Then reboot, test install is OK.  While still running, lets add ZFS to the kernel.   Open a Terminal and then:
+Then reboot, test install is OK.  
+
+# Second boot
+
+Now with a fully functioning Linux Mint 17 system, lets add ZFS to the kernel.   Open a Terminal and then:
 
 ```
 sudo -i
 add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
-hostid > /etc/hostid
+hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
 apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
@@ -58,7 +62,7 @@ dmesg | grep ZFS:
 
 If that works, now we can create ZFS volumes, etc.
 
-# Partitioning
+## Partitioning
 
 **First backup your data!  You have been warned!**
 
@@ -149,13 +153,29 @@ Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 zpool set cachefile=/etc/zfs/zpool.cache rpool
 ```
 
-Now make it so you can login as root from the graphical login screen so that you don't touch /home when you login (since we want to copy /home to /media/zfsraid).  Search for "Login Window" and go to Options and allow root to login. Then set the root password:
+Add kernel parameters so ZFS will be mounted on boot-up.  Edit these lines in /etc/defaults/grub:
+
+```
+GRUB_CMDLINE_LINUX_DEFAULT="root=ZFS=rpool/root boot=zfs quiet splash"
+```
+
+You can also comment out the `GRUB_HIDDEN*` lines so the boot menu isn't hidden (in case you want to edit it for testing purposes).
+
+For good measure, lets regenerate the ramdisk and update grub:
+
+```
+update-initramfs -c -k all
+```
+
+Hopefully ZFS will boot ast the root (/) drive.
+
+Just before you reboot, lets make it so you can login as root if needed for debugging, by setting the password and making it so the root user can login via the graphical login manager ("Linux Mint Menu >> Administration >> Login Window >> Options >> Allow root login")
 
 ```
 passwd
 ```
 
-# Reboot
+# Third Boot
 
 Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
 
