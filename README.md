@@ -112,7 +112,7 @@ The part2 and part3 partitions on the SSD are a mirror.  The three large hard dr
 ```
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
 zpool set bootfs=rpool/root rpool
-zfs set compression=on rpool
+zfs set compression=lz4 rpool
 zfs create -o mountpoint=/ rpool/root
 zfs create -o mountpoint=/home -o compression=off rpool/home
 zfs create -o mountpoint=/pictures -o compression=off rpool/pictures
@@ -189,6 +189,12 @@ For good measure, lets regenerate the ramdisk and update grub (initramsfs will c
 
 ```
 update-initramfs -c -k all
+update-grub
+```
+
+If grub errors out because it can't find a volume, then run this first:
+```
+ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
 ```
 
