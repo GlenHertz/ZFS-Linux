@@ -113,11 +113,11 @@ The part2 and part3 partitions on the SSD are a mirror.  The three large hard dr
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
 zfs set compression=on rpool
 zfs create -o mountpoint=/ rpool/root
-zfs create -o mountpoint=/home rpool/home
-zfs create -o mountpoint=/pictures rpool/pictures
-zfs create -o mountpoint=/music rpool/music
-zfs create -o mountpoint=/mythtv rpool/mythtv
-zfs create -o mountpoint=/scratch rpool/scratch
+zfs create -o mountpoint=/home -o compression=off rpool/home
+zfs create -o mountpoint=/pictures -o compression=off rpool/pictures
+zfs create -o mountpoint=/music -o compression=off rpool/music
+zfs create -o mountpoint=/mythtv -o compression=off rpool/mythtv
+zfs create -o mountpoint=/scratch -o compression=off rpool/scratch
 zfs set compression=off rpool/pictures
 zfs set compression=off rpool/music
 zfs set compression=off rpool/mythtv
@@ -125,6 +125,9 @@ zpool set bootfs=rpool/root rpool
 zpool export rpool
 zpool import -R /mnt rpool
 ```
+
+Check if zpool.cache exists
+
 
 After that, view the pool configuration:
 ```
@@ -156,6 +159,7 @@ Creat a chroot environment:
 mount --bind /dev  /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys  /mnt/sys
+mount --bind /boot /mnt/boot
 chroot /mnt /bin/bash --login
 ```
 
@@ -166,6 +170,7 @@ Fix fstab on the new root by editing `/etc/fstab` and commenting the line that m
 Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 
 ```
+# First, check that zpool.cache exists before running this command (curious)
 zpool set cachefile=/etc/zfs/zpool.cache rpool
 ```
 
@@ -177,7 +182,7 @@ GRUB_CMDLINE_LINUX_DEFAULT="root=ZFS=rpool/root boot=zfs zfs_force=1 quiet splas
 
 You can also comment out the `GRUB_HIDDEN*` lines so the boot menu isn't hidden (in case you want to edit it for testing purposes).
 
-For good measure, lets regenerate the ramdisk and update grub:
+For good measure, lets regenerate the ramdisk and update grub (initramsfs will copy the hostid into the image):
 
 ```
 update-initramfs -c -k all
@@ -199,6 +204,12 @@ Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
 zfs export rpool
 ```
 
+Exit chroot and unmount
+
+```
+exit
+umount .... more here
+```
 
 # Third Boot
 
