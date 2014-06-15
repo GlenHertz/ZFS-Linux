@@ -49,6 +49,7 @@ sudo -i
 add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
+hostid > /etc/hostid
 apt-get install --yes spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
