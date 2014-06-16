@@ -217,9 +217,11 @@ update-grub
 
 If grub errors out because it can't find a volume, like so:
 
+```
+/usr/sbin/grub-probe: error: failed to get canonical path of `/dev/ata-WDC_WD30EFRX-1'.
+```
 
-
-, then run this first:
+Then run this first:
 
 ```
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
@@ -296,7 +298,7 @@ umount /mnt/dev
 Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
 
 ```
-zfs export rpool
+zpool export rpool
 ```
 
 
