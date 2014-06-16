@@ -208,6 +208,7 @@ Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 rm /etc/zfs/zpool.cache
 zpool set cachefile=/etc/zfs/zpool.cache rpool
 ls -lh /etc/zfs/zpool.cache
+zpool set bootfs=rpool/root rpool
 ```
 
 Add kernel parameters so ZFS will be mounted on boot-up.  Edit these lines in /etc/defaults/grub:
