@@ -140,6 +140,13 @@ zpool list -v
 Get / ready to copy
 ```
 locale-gen en_US.utf8
+locale-gen en_CA.utf8
+```
+
+Export zfs volume:
+
+```
+zfs export rpool
 ```
 
 # Reboot to live CD
