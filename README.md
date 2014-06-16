@@ -227,12 +227,6 @@ Then run this first:
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
 ```
-Then install grub for sure....?
-
-```
-install-grub /dev/sda
-```
-
 However, this leaves grub in a bad state.  Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct.  The incorrect version looks like this:
 ```
 menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class ubuntu --class gnu-linux --class gnu --class os {
@@ -277,6 +271,14 @@ menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class
 }
 
 ```
+
+Then install grub for sure....?
+
+```
+install-grub /dev/sda
+```
+
+
 
 You must force a write to this file because it is readonly.  
 
