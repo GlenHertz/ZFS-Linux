@@ -62,7 +62,7 @@ dmesg | grep ZFS:
 
 If that works, now we can create ZFS volumes, etc.
 
-## Partitioning
+#### Partitioning
 
 **First backup your data!  You have been warned!**
 
@@ -109,7 +109,7 @@ lrwxrwxrwx 1 root root  9 Jun 14 15:16 ata-WDC_WD30EFRX-3 -> ../../sdb
 
 The part2 and part3 partitions on the SSD are a mirror.  The three large hard drives create a raidz1 array and the SSD part4 is the cache for the slow hard drives (making them into a fast hybrid drive).
 
-# Create ZFS filesystem
+#### Create ZFS filesystem
 
 ```
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
@@ -226,6 +226,11 @@ Then run this first:
 ```
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
+```
+Then install grub for sure....?
+
+```
+install-grub /dev/sda
 ```
 
 However, this leaves grub in a bad state.  Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct.  The incorrect version looks like this:
