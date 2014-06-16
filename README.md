@@ -308,7 +308,7 @@ zpool export rpool
 ```
 
 
-# Forth Boot (too finished system)
+# Fourth Boot (too finished system)
 
 Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
 
