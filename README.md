@@ -179,7 +179,7 @@ cp -a /sda4/* /mnt
 ```
 
 
-## Fix Grub and other files in new root (via chroot) so it will boot
+#### Fix Grub and other files in new root (via chroot) so it will boot
 
 Creat a chroot environment:
 
