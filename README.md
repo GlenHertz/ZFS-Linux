@@ -192,14 +192,62 @@ update-initramfs -c -k all
 update-grub
 ```
 
-If grub errors out because it can't find a volume, then run this first:
+If grub errors out because it can't find a volume, like so:
+
+
+
+, then run this first:
 ```
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
 ```
 
-Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct (I had a few extra /dev/sd* lines in there).
+However, this leaves grub in a bad state.  Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct.  The incorrect version looks like this:
+```
+menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class ubuntu --class gnu-linux --class gnu --class os {
+        recordfail
+        gfxmode $linux_gfx_mode
+        insmod gzio
+        insmod part_msdos
+        insmod ext2
+        set root='hd0,msdos1'
+        if [ x$feature_platform_search_hint = xy ]; then
+          search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  dc9e03d3-7645-447d-ac8e-f80c0b1f4c43
+        else
+          search --no-floppy --fs-uuid --set=root dc9e03d3-7645-447d-ac8e-f80c0b1f4c43
+        fi
+        linux   /vmlinuz-3.13.0-24-generic root=/dev/sdc
+/dev/sdd
+/dev/sdb
+/dev/sda2 ro   root=ZFS=rpool/root boot=zfs zfs_force=1 quiet splash $vt_handoff
+        initrd  /initrd.img-3.13.0-24-generic
+}
 
+```
+
+The correct version is:
+
+
+```
+menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class ubuntu --class gnu-linux --class gnu --class os {
+        recordfail
+        gfxmode $linux_gfx_mode
+        insmod gzio
+        insmod part_msdos
+        insmod ext2
+        set root='hd0,msdos1'
+        if [ x$feature_platform_search_hint = xy ]; then
+          search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  dc9e03d3-7645-447d-ac8e-f80c0b1f4c43
+        else
+          search --no-floppy --fs-uuid --set=root dc9e03d3-7645-447d-ac8e-f80c0b1f4c43
+        fi
+        linux   /vmlinuz-3.13.0-24-generic ro   root=ZFS=rpool/root boot=zfs zfs_force=1 quiet splash $vt_handoff
+        initrd  /initrd.img-3.13.0-24-generic
+}
+
+```
+
+You must force a write to this file because it is readonly.  
 
 Hopefully ZFS will boot ast the root (/) drive.
 
