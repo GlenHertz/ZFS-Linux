@@ -284,7 +284,7 @@ menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class
 Then install grub for sure....?
 
 ```
-install-grub /dev/sda
+grub-install /dev/sda
 ```
 
 
