@@ -115,10 +115,10 @@ zpool set bootfs=rpool/root rpool
 zfs set compression=lz4 rpool
 zfs create -o mountpoint=/ rpool/root
 zfs create -o mountpoint=/home -o compression=off rpool/home
-zfs create -o mountpoint=/pictures -o compression=off rpool/pictures
-zfs create -o mountpoint=/music -o compression=off rpool/music
-zfs create -o mountpoint=/mythtv -o compression=off rpool/mythtv
-zfs create -o mountpoint=/scratch -o compression=off rpool/scratch
+zfs create -o mountpoint=/mnt/pictures -o compression=off rpool/pictures
+zfs create -o mountpoint=/mnt/music -o compression=off rpool/music
+zfs create -o mountpoint=/mnt/mythtv -o compression=off rpool/mythtv
+zfs create -o mountpoint=/scratch rpool/scratch
 zpool export rpool
 zpool import -R /mnt rpool
 ```
