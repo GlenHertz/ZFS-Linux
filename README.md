@@ -36,7 +36,7 @@ A USB drive is very useful, lets create a bootable USB drive with System Rescue 
   * Then launched unetbootin and installed System Recovery ISO onto first partition and Linux Mint 17 on second partition.
 
  
-# First boot-up
+# First boot-up (install from Live CD)
 
 * Boot from Linux Mint 17 live CD
 
@@ -44,7 +44,7 @@ Install /boot on an ext2 partition and / on an ext4 partition (where ZFS cache w
 
 Then reboot, test install is OK.  
 
-# Second boot
+# Second boot (install ZFS on root system)
 
 Now with a fully functioning Linux Mint 17 system, lets add ZFS to the kernel.   Open a Terminal and then:
 
@@ -109,6 +109,8 @@ lrwxrwxrwx 1 root root  9 Jun 14 15:16 ata-WDC_WD30EFRX-3 -> ../../sdb
 
 The part2 and part3 partitions on the SSD are a mirror.  The three large hard drives create a raidz1 array and the SSD part4 is the cache for the slow hard drives (making them into a fast hybrid drive).
 
+# Create ZFS filesystem
+
 ```
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
 zpool set bootfs=rpool/root rpool
@@ -149,9 +151,25 @@ Export zfs volume:
 zfs export rpool
 ```
 
-# Reboot to live CD
+# Third reboot to live CD (copy files to ZFS partitions)
 
-Boot to live CD, install ZFS module (as above), then mount old and new roots and do a copy
+Boot to live CD, install ZFS modules, then mount old and new roots and do a copy
+
+Install ZFS modules:
+
+```
+sudo -i
+add-apt-repository --yes ppa:zfs-native/stable
+apt-get update  # some CD-ROM errors are OK
+apt-get install --yes build-essential
+#hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall #zfs-initramfs
+modprobe zfs
+dmesg | grep ZFS:
+# if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
+```
+
+Copy files to new root
 
 ```
 mkdir /sda4
@@ -161,7 +179,7 @@ cp -a /sda4/* /mnt
 ```
 
 
-## Fix Grub in chroot so it will boot
+## Fix Grub and other files in new root (via chroot) so it will boot
 
 Creat a chroot environment:
 
@@ -169,7 +187,7 @@ Creat a chroot environment:
 mount --bind /dev  /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys  /mnt/sys
-mount --bind /boot /mnt/boot
+mount /dev/sda1 /mnt/boot
 chroot /mnt /bin/bash --login
 ```
 
@@ -267,7 +285,11 @@ Exit chroot and unmount
 
 ```
 exit
-umount .... more here
+umount /mnt/boot
+umount /mnt/sys
+umount /mnt/proc
+umount /mnt/dev
+```
 ```
 
 
