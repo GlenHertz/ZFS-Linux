@@ -142,9 +142,9 @@ Get / ready to copy
 locale-gen en_US.utf8
 ```
 
-# Reboot
+# Reboot to live CD
 
-Boot from live CD, install ZFS module (as above), then mount old and new roots and do a copy
+Boot to live CD, install ZFS module (as above), then mount old and new roots and do a copy
 
 ```
 mkdir /sda4
@@ -166,8 +166,6 @@ mount --bind /boot /mnt/boot
 chroot /mnt /bin/bash --login
 ```
 
-# More here
-
 Fix fstab on the new root by editing `/etc/fstab` and commenting the line that mounts to `/`.
 
 Now let make sure ZFS is loaded on reboot (not really sure about these steps):
@@ -183,7 +181,7 @@ Add kernel parameters so ZFS will be mounted on boot-up.  Edit these lines in /e
 GRUB_CMDLINE_LINUX_DEFAULT="root=ZFS=rpool/root boot=zfs zfs_force=1 quiet splash"
 ```
 
-You can also comment out the `GRUB_HIDDEN*` lines so the boot menu isn't hidden (in case you want to edit it for testing purposes).
+You can also comment out the `GRUB_HIDDEN` lines so the boot menu isn't hidden (in case you want to edit it for testing purposes).
 
 For good measure, lets regenerate the ramdisk and update grub (initramsfs will copy the hostid into the image):
 
@@ -197,6 +195,7 @@ If grub errors out because it can't find a volume, like so:
 
 
 , then run this first:
+
 ```
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
@@ -272,7 +271,7 @@ zfs export rpool
 ```
 
 
-# Forth Boot
+# Forth Boot (too finished system)
 
 Now reboot again to see if ZFS was loaded on boot.  Open a terminal:
 
