@@ -54,7 +54,7 @@ add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
 #hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
-apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall #zfs-initramfs
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
 # if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
@@ -148,7 +148,7 @@ locale-gen en_CA.utf8
 Export zfs volume:
 
 ```
-zfs export rpool
+zpool export rpool
 ```
 
 # Third reboot to live CD (copy files to ZFS partitions)
@@ -163,7 +163,7 @@ add-apt-repository --yes ppa:zfs-native/stable
 apt-get update  # some CD-ROM errors are OK
 apt-get install --yes build-essential
 #hostid > /etc/hostid # this may not work, you might have to edit the file with a text editor ???
-apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall #zfs-initramfs
+apt-get install spl-dkms zfs-dkms ubuntu-zfs mountall zfs-initramfs
 modprobe zfs
 dmesg | grep ZFS:
 # if successful, should return: ZFS: Loaded module v0.6.3-2~trusty, ZFS pool version 5000, ZFS filesystem version 5
