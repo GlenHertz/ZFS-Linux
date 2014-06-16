@@ -352,3 +352,40 @@ rpool/mythtv    5.4T  256K  5.4T   1% /mythtv
 rpool/pictures  5.4T  256K  5.4T   1% /pictures
 rpool/scratch   5.4T  256K  5.4T   1% /scratch
 ```
+
+If not you may see this when your boot fails:
+
+```
+Command: mount -t zfs -o zfsutil - /root
+Message: filesystem '-' cannot be mounted, unable to open dataset
+mount: mounting - on /root failed: No such file or directory
+Error: 1
+```
+
+Being that /etc/zfs/zpool.cache is effectively does what /etc/fstab does (tells where your disks are), I think it was incorrectly generated.  Lets try to regenerate it inside a chroot environment:
+
+```
+rm -Rf /mnt/*
+zpool import -R /mnt rpool
+mount --bind /dev  /mnt/dev
+mount --bind /proc /mnt/proc
+mount --bind /sys  /mnt/sys
+mount /dev/sda1 /mnt/boot
+chroot /mnt /bin/bash --login
+rm /etc/zfs/zpool.cache
+zpool set cachefile=/etc/zfs/zpool.cache rpool
+exit
+umount /mnt/boot
+umount /mnt/sys
+umount /mnt/proc
+umount /mnt/dev
+zpool export rpool
+```
+
+```
+reboot
+```
+
+
+
+
