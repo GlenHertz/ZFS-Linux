@@ -292,7 +292,6 @@ umount /mnt/sys
 umount /mnt/proc
 umount /mnt/dev
 ```
-```
 
 
 Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
