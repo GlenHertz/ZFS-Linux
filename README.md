@@ -117,9 +117,9 @@ The part2 and part3 partitions on the SSD are a mirror.  The three large hard dr
 
 ```
 zpool create -O mountpoint=none rpool raidz1 ata-WDC_WD30EFRX-1 ata-WDC_WD30EFRX-2 ata-WDC_WD30EFRX-3 cache ata-KINGSTON-part2
+zfs create -o mountpoint=/ rpool/root
 zpool set bootfs=rpool/root rpool
 zfs set compression=on rpool
-zfs create -o mountpoint=/ rpool/root
 zfs create -o mountpoint=/home -o compression=off rpool/home
 zfs create -o mountpoint=/mnt/pictures -o compression=off rpool/pictures
 zfs create -o mountpoint=/mnt/music -o compression=off rpool/music
