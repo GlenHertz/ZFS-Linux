@@ -44,6 +44,10 @@ Install /boot on an ext2 partition and / on an ext4 partition (where ZFS cache w
 
 Then reboot, test install is OK.  
 
+```
+reboot
+```
+
 # Second boot (install ZFS on root system)
 
 Now with a fully functioning Linux Mint 17 system, lets add ZFS to the kernel.   Open a Terminal and then:
@@ -150,6 +154,11 @@ Export zfs volume:
 ```
 zpool export rpool
 ```
+
+```
+reboot
+```
+
 
 # Third reboot to live CD (copy files to ZFS partitions)
 
@@ -305,6 +314,10 @@ Export the zfs pool otherwise it will not boot if this doesn't work cleanly:
 
 ```
 zpool export rpool
+```
+
+```
+reboot
 ```
 
 
