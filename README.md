@@ -236,7 +236,7 @@ Then run this first:
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
 ```
-However, this leaves grub in a bad state.  Check `/boot/grub/grub.conf` for "zfs" and make sure the lines look correct.  The incorrect version looks like this:
+However, this leaves grub in a bad state.  Check `/boot/grub/grub.cfg` for "zfs" and make sure the lines look correct.  The incorrect version looks like this:
 ```
 menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class ubuntu --class gnu-linux --class gnu --class os {
         recordfail
@@ -374,6 +374,11 @@ mount /dev/sda1 /mnt/boot
 chroot /mnt /bin/bash --login
 rm /etc/zfs/zpool.cache
 zpool set cachefile=/etc/zfs/zpool.cache rpool
+update-initramfs -c -k all
+ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
+update-grub
+vi /boot/grub/grub.cfg
+grub-install /dev/sda
 exit
 umount /mnt/boot
 umount /mnt/sys
