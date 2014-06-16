@@ -205,8 +205,9 @@ Fix fstab on the new root by editing `/etc/fstab` and commenting the line that m
 Now let make sure ZFS is loaded on reboot (not really sure about these steps):
 
 ```
-# First, check that zpool.cache exists before running this command (curious)
+rm /etc/zfs/zpool.cache
 zpool set cachefile=/etc/zfs/zpool.cache rpool
+ls -lh /etc/zfs/zpool.cache
 ```
 
 Add kernel parameters so ZFS will be mounted on boot-up.  Edit these lines in /etc/defaults/grub:
