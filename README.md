@@ -196,7 +196,7 @@ Creat a chroot environment:
 mount --bind /dev  /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys  /mnt/sys
-mount /dev/sda1 /mnt/boot
+mount /dev/sde1 /mnt/boot
 chroot /mnt /bin/bash --login
 ```
 
@@ -286,7 +286,7 @@ menuentry 'Linux Mint 17 Cinnamon 64-bit, 3.13.0-24-generic (/dev/sda1)' --class
 Then install grub for sure....?
 
 ```
-grub-install /dev/sda
+grub-install /dev/sde
 ```
 
 
@@ -347,7 +347,7 @@ none            4.0K     0  4.0K   0% /sys/fs/cgroup
 none            5.0M     0  5.0M   0% /run/lock
 none            3.9G  676K  3.9G   1% /run/shm
 none            100M   12K  100M   1% /run/user
-/dev/sda1       236M   75M  149M  34% /boot
+/dev/sde1       236M   75M  149M  34% /boot
 rpool/home      5.4T   42M  5.4T   1% /home
 rpool/music     5.4T  256K  5.4T   1% /music
 rpool/mythtv    5.4T  256K  5.4T   1% /mythtv
@@ -372,7 +372,7 @@ zpool import -R /mnt rpool
 mount --bind /dev  /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys  /mnt/sys
-mount /dev/sda1 /mnt/boot
+mount /dev/sde1 /mnt/boot
 chroot /mnt /bin/bash --login
 rm /etc/zfs/zpool.cache
 zpool set cachefile=/etc/zfs/zpool.cache rpool
@@ -380,7 +380,7 @@ update-initramfs -c -k all
 ls  /dev/disk/by-id/  | grep -v wwn | grep -v usb | while read i; do ln -s /dev/disk/by-id/$i /dev/$i; done
 update-grub
 vi /boot/grub/grub.cfg
-grub-install /dev/sda
+grub-install /dev/sde
 exit
 umount /mnt/boot
 umount /mnt/sys
