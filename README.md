@@ -394,7 +394,7 @@ reboot
 ```
 
 
-= Backups
+# Backups
 
 First create ZFS partition on an extra drive:
 
