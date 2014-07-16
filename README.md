@@ -394,5 +394,15 @@ reboot
 ```
 
 
+= Backups
+
+First create ZFS partition on an extra drive:
+
+```
+zpool create -f -O mountpoint=/backup3T backup3T ata-WDC_WD30EFRX-4
+zfs set com.sun:auto-snapshot=false backup3T
+zfs set compression=lz4 backup3T
+```
+
 
 
